@@ -2,20 +2,131 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Evaluating Parallel Graph Coloring for Conflict-Free Graph Processingt</title>
+  <title>Evaluating Parallel Graph Coloring for Conflict-Free Graph Processing</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    code {
+      background-color: #f2f2f2;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Evaluating Parallel Graph Coloring for Conflict-Free Graph Processing</h1>
-  <p>Welcome to our 15-618 project page.</p>
 
-  <h2>Team Members</h2>
-  <ul>
-    <li>Amin Hong (minhong)</li>
-    <li>Jinrae Kim (jinraek)</li>
-  </ul>
+<h1>Evaluating Parallel Graph Coloring for Conflict-Free Graph Processing</h1>
+<p>Welcome to our 15-618 Parallel Computer Architecture Project Page.</p>
 
-  <h2>Project Proposal</h2>
-  <a href="proposal.pdf">Download Proposal</a>
+<h2>Team Members</h2>
+<ul>
+  <li><b>Amin Hong</b> (minhong)</li>
+  <li><b>Jinrae Kim</b> (jinraek)</li>
+</ul>
+
+<h2>Project Proposal</h2>
+<p><a href="proposal.pdf"><b>📄 Download Proposal (PDF)</b></a></p>
+
+<hr>
+
+<h2>1. Summary</h2>
+<ul>
+  <li>We evaluate how different graph coloring algorithms impact the performance of parallel graph processing.</li>
+  <li>After generating color partitions with multiple coloring algorithms (e.g., greedy, LDF, smallest-last), we build parallel schedules that execute each color class as an independent batch.</li>
+  <li>Using simple parallel kernels such as Laplacian smoothing and neighbor-aggregation workloads, we compare runtime, scaling behavior, and synchronization overhead across multiple coloring strategies.</li>
+</ul>
+
+<h2>2. Background</h2>
+<p>
+Graph analytics often involve computations where each vertex updates its state using information from its
+neighbors (e.g., Laplacian smoothing, PageRank-like updates, community detection).
+However, running these updates in parallel can introduce race conditions and
+synchronization overhead when adjacent vertices update shared data simultaneously.
+</p>
+
+<p>
+Graph coloring is used as a preprocessing step to avoid such conflicts by partitioning the vertices into 
+<b>color batches</b> where no two vertices in the same batch are adjacent.
+Each batch can then be processed conflict-free and in parallel.
+</p>
+
+<pre>
+for color = 1..C:
+    parallel_for (v in vertices_with_color[color]):
+        out[v] = f(neighbors(v))
+    barrier
+</pre>
+
+<p>
+This structure ensures deterministic updates and avoids atomic operations.
+We analyze how coloring quality affects the overall performance and scalability of parallel graph workloads.
+</p>
+
+<h2>3. Challenges</h2>
+<ul>
+  <li><b>Irregular Workload and Dependency Structure</b><br>
+      Graphs exhibit widely varying degrees and connectivity, leading to unbalanced color groups that limit parallel speedup.
+  </li>
+  <li><b>Memory Access Locality and Communication Overhead</b><br>
+      Graph algorithms require irregular memory access,
+      and coloring cannot solve all locality issues—performance heavily depends on graph structure.
+  </li>
+  <li><b>Mapping Workload to Hardware Efficiently</b><br>
+      Some color classes may be too small or too large. Achieving good load balance while keeping synchronization minimal is challenging.
+  </li>
+</ul>
+
+<h2>4. Resources</h2>
+<ul>
+  <li><b>Graph Coloring Libraries</b>: BGL, networkx for baseline colorings</li>
+  <li><b>Custom Algorithms</b>: LDF, Smallest-Last, Random Greedy</li>
+  <li><b>Dataset Tools</b>: Synthetic graphs with controlled density (100–500 nodes)</li>
+  <li><b>Course References</b>: 15-618 lecture notes on smoothing, graph algorithms</li>
+</ul>
+
+<h2>5. Goals and Deliverables</h2>
+<ul>
+  <li><b>50%</b>: Dataset generator, baseline coloring, sequential Laplacian smoothing</li>
+  <li><b>75%</b>: Custom coloring algorithms + parallel scheduling framework</li>
+  <li><b>100%</b>: Full evaluation on all datasets</li>
+  <li><b>125%</b>: Fixed-palette-size experiments</li>
+  <li><b>150%</b>: Search for optimal number of colors + additional heuristics</li>
+</ul>
+
+<h2>6. Platform Choice</h2>
+<ul>
+  <li><b>Compute Platforms</b>: CMU GHC machines, PSC Bridges-2 cluster</li>
+  <li><b>Programming Environment</b>: C++ + OpenMP for parallel loops and synchronization</li>
+</ul>
+
+<h2>7. Schedule and Work Partitioning</h2>
+<ul>
+  <li><b>Week 1 (50%)</b>: Graph generation, baseline coloring, sequential kernel</li>
+  <li><b>Week 2 (75%)</b>: Parallel color-batch scheduler + initial performance tests</li>
+  <li><b>Week 3 (100%)</b>: Final evaluation + plots + analysis</li>
+  <li><b>125%</b>: Color sweeping experiments</li>
+  <li><b>150%</b>: Optimal color tuning + heuristics</li>
+</ul>
+
+<ul>
+  <li><b>Amin Hong</b>: Parallel implementation, evaluation pipeline, color sweep experiments</li>
+  <li><b>Jinrae Kim</b>: Dataset design, coloring algorithm implementation, analysis scripts</li>
+</ul>
+
+<hr>
+
+<h2>References</h2>
+<ol>
+  <li>Brelaz, D. (1979). New methods to color the vertices of a graph. CACM.</li>
+  <li>Gebremedhin & Manne (2000). Scalable parallel graph coloring algorithms.</li>
+  <li>Jones & Plassmann (1993). A parallel graph coloring heuristic.</li>
+  <li>Karypis & Kumar (1998). Multilevel partitioning of irregular graphs.</li>
+</ol>
 
 </body>
 </html>
